@@ -6,4 +6,5 @@ mod observer;
 
 fn main() {
     let cells=Crowd::new(10);
+    cells.evolve();
 }

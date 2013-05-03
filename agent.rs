@@ -44,6 +44,12 @@ impl ToStr for Cell {
     }
 }
 
+#[test]
+fn test_new() {
+    let cell1=Cell::new(0);
+    let cell2=Cell::new(1);
+    assert!(cell1.center != cell2.center);
+}
 //
 // Population
 //
@@ -58,7 +64,7 @@ pub impl Crowd {
         io::println(fmt!("Population initiale : %d\n",init_pop as int));
 
         let mut pop : ~[@Cell]=~[];
-        for uint::range(1,init_pop) |num| {
+        for uint::range(1,init_pop+1) |num| {
             let lonely_one = @Cell::new(num);
             io::println(lonely_one.to_str());
             pop.push(copy lonely_one);
@@ -69,4 +75,16 @@ pub impl Crowd {
     fn size(&self) -> uint {
         self.cells.len()
     }
+
+    fn evolve(&self) {
+        for self.cells.each |cell| {
+            io::println(fmt!("Cell %d has moved !", cell.id as int));
+        }
+    }
+}
+
+#[test]
+fn test_size() {
+    let crowd=Crowd::new(13);
+    assert!(crowd.size()==13);
 }
