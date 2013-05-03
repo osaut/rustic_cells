@@ -11,8 +11,8 @@ struct Cell {
     center: Point,
     id: uint,
     radius: float,
-    velocity: [float,..3],
-    acc: [float,..3],
+    velocity: Point,
+    acc: Point,
     generation: int,
     age: int
 }
@@ -24,15 +24,28 @@ pub impl Cell {
         //io::println(fmt!("%f\n", r));
         let center : Point =rand::random();
 
-        Cell{ center: center, id: ident, radius: radius, velocity: [0.0,0.0,0.0], acc: [0.0,0.0,0.0], generation: 0, age:0}
+        Cell{ center: center, id: ident, radius: radius, velocity: Point::new(), acc: Point::new(), generation: 0, age:0}
     }
 
-    fn move(&self, tumeur: ~Crowd, dt: float) {
-        io::println(fmt!("%d @ %f\n",tumeur.size() as int, dt));
+    fn move(&mut self, tumeur: &Crowd, dt: f64) {
+        let old_acc = copy self.acc;
+
+        // Nouvelle position
+        self.center+=self.velocity+self.acc*(0.5*float::pow(dt,2.0) as f64);
+
+        // Force aléatoire
+        let F_alea: Point=rand::random();
+        self.acc=F_alea*(0.0005 as f64);
+
+        // Nouvelle vitesse
+        let lambda : f64=5.0;
+        let denom : f64 = 1.0/(1.0+lambda*dt/2.0);
+        self.velocity=(self.velocity*(1.0-lambda*dt/2.0)+(self.acc+old_acc)*dt/(2.0 as f64))*denom;
+
     }
 
-    fn replicate(&mut self, tumeur: ~Crowd, dt: float) {
-        io::println(fmt!("%d @ %f\n",tumeur.size() as int, dt));
+    fn replicate(&mut self, tumeur: &Crowd, dt: f64) {
+        io::println(fmt!("%d @ %f\n",tumeur.size() as int, dt as float));
 
         self.age+=1;
     }
