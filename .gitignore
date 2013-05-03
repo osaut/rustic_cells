@@ -1,0 +1,9 @@
+*~
+*dSYM*
+*.dylib
+*.plist
+*.vtk
+main
+run
+*.DS_Store*
+*.sublime-workspace
