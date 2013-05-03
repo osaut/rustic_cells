@@ -28,7 +28,7 @@ impl Observer for ScreenPrinter {
     fn see(&mut self, time: f64, crowd: ~Crowd) {
        self.ticks+=1;
        if (self.ticks % self.freq == 0) {
-        io::println(fmt!("%f : %d cells.\n",time as float, crowd.size() as int));
+        io::println(crowd.to_str());
        }
     }
 }

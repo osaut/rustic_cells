@@ -96,6 +96,20 @@ pub impl Crowd {
     }
 }
 
+
+impl ToStr for Crowd {
+    fn to_str(&self) -> ~str {
+        let mut desc =~"";
+        for self.cells.each |cell| {
+            let mut lcell_desc=~"";
+            lcell_desc.push_str(cell.to_str()); lcell_desc.push_str("\n");
+             desc.push_str(lcell_desc);
+        }
+        desc
+    }
+}
+
+
 #[test]
 fn test_size() {
     let crowd=Crowd::new(13);
