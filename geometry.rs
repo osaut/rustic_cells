@@ -7,6 +7,10 @@ pub struct Point {
 }
 
 pub impl Point {
+    fn new() -> Point {
+        Point{x:0.0, y:0.0}
+    }
+
     fn dist(&self, other : &Point) -> f64 {
         f64::sqrt(f64::pow(self.x-other.x,2.0)+f64::pow(self.y-other.y,2.0))
     }
@@ -65,6 +69,7 @@ impl RhsOfMul<Point> for f64 {
     Point{x: (self*lhs.x), y:(self*lhs.y)}
    }
 }
+
 impl<Result, Rhs: RhsOfMul<Result> > ops::Mul<Rhs, Result> for Point {
   fn mul(&self, rhs: &Rhs) -> Result {
     rhs.mul_lhs_to(self)
