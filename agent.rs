@@ -74,12 +74,10 @@ struct Crowd {
 
 pub impl Crowd {
     fn new(init_pop : uint) -> Crowd {
-        io::println(fmt!("Population initiale : %d\n",init_pop as int));
 
         let mut pop : ~[@mut Cell]=~[];
         for uint::range(1,init_pop+1) |num| {
             let lonely_one = @mut Cell::new(num);
-            io::println(lonely_one.to_str());
             pop.push(copy lonely_one);
         }
         Crowd{ cells : pop, time: 0.0}
@@ -90,8 +88,10 @@ pub impl Crowd {
     }
 
     fn evolve(&self) {
+        let dt=0.0001;
+
         for self.cells.each |cell| {
-            io::println(fmt!("Cell %d has moved !", cell.id as int));
+            cell.move(self, dt);
         }
     }
 }
