@@ -10,7 +10,7 @@ mod geometry;
 struct Cell {
     center: Point,
     id: uint,
-    radius: float,
+    radius: f64,
     velocity: Point,
     acc: Point,
     generation: int,
@@ -35,7 +35,8 @@ pub impl Cell {
 
         // Force aléatoire
         let F_alea: Point=rand::random();
-        self.acc=F_alea*(0.0005 as f64);
+        self.acc=self.calc_rep_force(tumeur)+F_alea*(0.0005 as f64);
+
 
         // Nouvelle vitesse
         let lambda : f64=5.0;
@@ -49,6 +50,22 @@ pub impl Cell {
 
         self.age+=1;
     }
+
+    fn calc_rep_force(&self, tumeur: &Crowd) -> Point {
+        let seuil=3.0*self.radius;
+        let mut force = Point::new();
+        for tumeur.cells.each |&cell| {
+            let dist_cells=(self.dist(cell)+2.0*self.radius)/seuil;
+            let factor = 1.0/float::pow(dist_cells,3.0)*1e-7 as f64;
+            force += (self.center-cell.center)*factor;
+        }
+        force
+    }
+
+    fn dist(&self, other: &Cell) -> f64 {
+        self.center.dist(&other.center)
+    }
+
 }
 
 impl ToStr for Cell {
@@ -88,7 +105,7 @@ pub impl Crowd {
     }
 
     fn evolve(&self) {
-        let dt=0.0001;
+        let dt=0.001;
 
         for self.cells.each |cell| {
             cell.move(self, dt);
