@@ -55,7 +55,7 @@ fn test_new() {
 //
 
 struct Crowd {
-    cells : ~[@Cell],
+    cells : ~[@mut Cell],
     time : float
 }
 
@@ -63,9 +63,9 @@ pub impl Crowd {
     fn new(init_pop : uint) -> Crowd {
         io::println(fmt!("Population initiale : %d\n",init_pop as int));
 
-        let mut pop : ~[@Cell]=~[];
+        let mut pop : ~[@mut Cell]=~[];
         for uint::range(1,init_pop+1) |num| {
-            let lonely_one = @Cell::new(num);
+            let lonely_one = @mut Cell::new(num);
             io::println(lonely_one.to_str());
             pop.push(copy lonely_one);
         }
