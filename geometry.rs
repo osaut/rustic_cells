@@ -46,6 +46,11 @@ impl RhsOfAdd<Point> for Point {
     Point{x: (self.x+lhs.x), y:(self.y+lhs.y)}
    }
 }
+impl RhsOfAdd<Point> for f64 {
+  fn add_lhs_to(&self, lhs: &Point) -> Point {
+    Point{x: (*self+lhs.x), y:(*self+lhs.y)}
+   }
+}
 impl<Result, Rhs: RhsOfAdd<Result> > ops::Add<Rhs, Result> for Point {
   fn add(&self, rhs: &Rhs) -> Result {
     rhs.add_lhs_to(self)
@@ -129,6 +134,14 @@ fn test_add() {
     let pt3=*pt1+*pt2;
 
     assert!((pt3.x==0.0)&&(pt3.y==5.0));
+}
+
+#[test]
+fn test_add_float() {
+    let pt1=Point{ x: 1.0, y: 2.0};
+    let pt3=pt1+1.0f64;
+
+    assert!((pt3.x==2.0)&&(pt3.y==3.0));
 }
 
 #[test]
