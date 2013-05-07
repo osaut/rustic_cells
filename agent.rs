@@ -65,6 +65,17 @@ pub impl Cell {
         force
     }
 
+    #[inline(always)]
+    fn x(&self) -> f64 {
+        self.center.x
+    }
+
+    #[inline(always)]
+    fn y(&self) -> f64 {
+        self.center.y
+    }
+
+
     fn dist(&self, other: &Cell) -> f64 {
         self.center.dist(&other.center)
     }
@@ -83,6 +94,7 @@ fn test_new() {
     let cell2=Cell::new(1);
     assert!(cell1.center != cell2.center);
 }
+
 //
 // Population
 //
