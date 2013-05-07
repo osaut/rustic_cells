@@ -52,6 +52,11 @@ impl RhsOfSub<Point> for Point {
     Point{x: (-self.x+lhs.x), y:(-self.y+lhs.y)}
    }
 }
+impl RhsOfSub<Point> for f64 {
+    fn sub_lhs_to(&self, lhs:&Point) -> Point {
+        Point{x: lhs.x - *self, y: lhs.y-*self}
+    }
+}
 impl<Result, Rhs: RhsOfSub<Result> > ops::Sub<Rhs, Result> for Point {
   fn sub(&self, rhs: &Rhs) -> Result {
     rhs.sub_lhs_to(self)
@@ -124,6 +129,11 @@ fn test_sub() {
     let pt2=@Point{ x: -1.0, y: 3.0};
     let pt3=*pt1-*pt2;
     assert!((pt3.x==2.0)&&(pt3.y==-1.0));
+}
+fn test_sub_float() {
+    let pt1=Point{ x: 1.0, y: 2.0};
+    let pt3=pt1-0.5 as f64;
+    assert!((pt3.x==0.5)&&(pt3.y==1.5));
 }
 
 #[test]
