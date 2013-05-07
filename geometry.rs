@@ -17,6 +17,14 @@ pub impl Point {
         sqrt(pow(self.x-other.x,2.0)+pow(self.y-other.y,2.0))
     }
 }
+
+
+impl ToStr for Point {
+    fn to_str(&self) -> ~str {
+        fmt!("(%f, %f)", self.x as float, self.y as float)
+    }
+}
+
 //
 // * Génération aléatoire
 //
