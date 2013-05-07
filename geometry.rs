@@ -1,4 +1,6 @@
 use core::rand::*;
+use core::f64::sqrt;
+use core::f64::pow;
 
 #[deriving(Eq)]
 pub struct Point {
@@ -12,7 +14,7 @@ pub impl Point {
     }
 
     fn dist(&self, other : &Point) -> f64 {
-        f64::sqrt(f64::pow(self.x-other.x,2.0)+f64::pow(self.y-other.y,2.0))
+        sqrt(pow(self.x-other.x,2.0)+pow(self.y-other.y,2.0))
     }
 }
 //

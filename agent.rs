@@ -1,6 +1,7 @@
 
 use geometry::Point;
 use core::rand::RngUtil;
+use core::float::pow;
 mod geometry;
 
 //
