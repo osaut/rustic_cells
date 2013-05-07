@@ -60,8 +60,8 @@ pub impl DiskWriter {
 
 impl Observer for DiskWriter {
     fn see(&mut self, time: f64, crowd: &Crowd) {
-        io::println(fmt!("%f : %d cells -> %s.\n",time as float, crowd.size() as int, self.fname));
         let outfile=self.new_filename();
+        io::println(fmt!("%f : %d cells -> %s.\n",time as float, crowd.size() as int, outfile));
         let writer = result::get( &io::file_writer( &Path(outfile), [io::Create, io::Truncate] ) );
 
         // Ecriture de l'entête
