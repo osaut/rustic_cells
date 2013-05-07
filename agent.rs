@@ -56,9 +56,11 @@ pub impl Cell {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
         for tumeur.cells.each |&cell| {
-            let dist_cells=(self.dist(cell)+2.0*self.radius)/seuil;
-            let factor = 1.0/float::pow(dist_cells,3.0)*1e-7 as f64;
-            force += (self.center-cell.center)*factor;
+            if(cell.id != self.id) {
+                let dist_cells=(self.dist(cell)+2.0*self.radius)/seuil;
+                let factor = 1.0/pow(dist_cells,3.0)*1e-7 as f64;
+                force += (self.center-cell.center)*factor;
+            }
         }
         force
     }
