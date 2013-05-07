@@ -5,7 +5,8 @@ mod agent;
 
 // Type Observer
 pub trait Observer {
-    fn see(&mut self, time: f64, crowd: ~Crowd);
+    fn see(&self, time: f64, crowd: &Crowd);
+    fn request_at(&mut self, time: f64) -> bool;
 }
 
 
@@ -25,11 +26,14 @@ pub impl ScreenPrinter {
 }
 
 impl Observer for ScreenPrinter {
-    fn see(&mut self, time: f64, crowd: ~Crowd) {
-       self.ticks+=1;
-       if (self.ticks % self.freq == 0) {
+    fn see(&self, time: f64, crowd: &Crowd) {
+        io::println(fmt!("%f\n", time as float));
         io::println(crowd.to_str());
-       }
+    }
+
+    fn request_at(&mut self, time: f64) -> bool {
+        self.ticks+=1;
+        self.ticks % self.freq == 0
     }
 }
 
@@ -49,11 +53,13 @@ pub impl DiskWriter {
 }
 
 impl Observer for DiskWriter {
-    fn see(&mut self, time: f64, crowd: ~Crowd) {
-       self.ticks+=1;
-       if (self.ticks % self.freq == 0) {
-        io::println(fmt!("%f : %d cells -> %s.\n",time as float, crowd.size() as int, self.fname));
-       }
+    fn see(&self, time: f64, crowd: &Crowd) {
+      io::println(fmt!("%f : %d cells -> %s.\n",time as float, crowd.size() as int, self.fname));
+    }
+
+    fn request_at(&mut self, time: f64) -> bool {
+        self.ticks+=1;
+        self.ticks % self.freq == 0
     }
 
 }

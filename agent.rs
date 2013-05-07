@@ -107,9 +107,7 @@ pub impl Crowd {
         self.cells.len()
     }
 
-    fn evolve(&self) {
-        let dt=0.001;
-
+    fn evolve(&self, dt: f64) {
         for self.cells.each |cell| {
             cell.move(self, dt);
         }
