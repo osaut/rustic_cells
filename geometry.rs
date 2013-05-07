@@ -13,9 +13,20 @@ pub impl Point {
         Point{x:0.0, y:0.0}
     }
 
-    fn dist(&self, other : &Point) -> f64 {
-        sqrt(pow(self.x-other.x,2.0)+pow(self.y-other.y,2.0))
+    fn new_dir() -> Point {
+        let mut pt : Point =rand::random();
+        pt-=0.5f64;
+        pt/pt.norm2()
     }
+
+    fn norm2(&self) -> f64 {
+        sqrt(pow(self.x,2.0)+pow(self.y,2.0))
+    }
+
+    fn dist(&self, other : &Point) -> f64 {
+        (*self-*other).norm2()
+    }
+
 }
 
 
@@ -119,6 +130,15 @@ impl<Result, Rhs: RhsOfDiv<Result> > ops::Div<Rhs, Result> for Point {
 // * Test
 //
 #[test]
+fn test_norm2() {
+    let pt1=@Point{ x: 1.0, y: 2.0};
+    let norm=pt1.norm2();
+
+    assert!(norm==sqrt(5.0));
+}
+
+
+#[test]
 fn test_dist() {
     let pt1=@Point{ x: 1.0, y: 2.0};
     let pt2=@Point{ x: 2.0, y: 3.0};
@@ -175,6 +195,12 @@ fn test_div() {
     assert!(pt3.dist(&Point{x:-1.0, y:2.0/3.0})==0.0);
     let pt4=(*pt1)/(2.0 as f64);
     assert!((pt4.x==0.5)&&(pt4.y==1.0));
+}
+
+#[test]
+fn test_new_dir() {
+    let pt = Point::new_dir();
+    assert!(pt.norm2()==1.0);
 }
 
 #[test]
