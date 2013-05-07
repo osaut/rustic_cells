@@ -168,6 +168,9 @@ fn test_div() {
 fn test_rand() {
     let pt1 : Point = rand::random();
     let pt2 : Point = rand::random();
+    let pt3 : Point = rand::random();
 
-    assert!(pt1 != pt2);
+
+    assert!(pt1 != pt2); assert!(pt1 != pt3); assert!(pt2 != pt3);
+    assert!((pt1.x>=0.0)&&(pt1.y<=1.0));
 }
