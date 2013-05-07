@@ -35,8 +35,9 @@ pub impl Cell {
         self.center+=self.velocity+self.acc*(0.5*float::pow(dt,2.0) as f64);
 
         // Force aléatoire
-        let F_alea: Point=rand::random();
-        self.acc=self.calc_rep_force(tumeur)+F_alea*(0.0005 as f64);
+        let mut F_alea: Point=rand::random();
+        F_alea-=0.5 as f64;
+        self.acc=self.calc_rep_force(tumeur)+F_alea*(0.05 as f64);
 
 
         // Nouvelle vitesse
