@@ -32,35 +32,44 @@ pub impl Cell {
         let old_acc = copy self.acc;
 
         // Nouvelle position
-        self.center+=self.velocity+self.acc*(0.5*float::pow(dt,2.0) as f64);
+        self.center+=self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
 
         // Force aléatoire
-        let mut F_alea: Point=rand::random();
-        F_alea-=0.5 as f64;
-        self.acc=self.calc_rep_force(tumeur)+F_alea*(0.05 as f64);
+        let F_alea= Point::new_dir();
+
+        // Nouvelle accélération
+        self.acc=self.calc_forces(tumeur)+F_alea*0.01f64;
 
 
-        // Nouvelle vitesse
-        let lambda : f64=5.0;
+        // Nouvelle vitesse ( + frottement)
+        let lambda : f64=10.0;
         let denom : f64 = 1.0/(1.0+lambda*dt/2.0);
         self.velocity=(self.velocity*(1.0-lambda*dt/2.0)+(self.acc+old_acc)*dt/(2.0 as f64))*denom;
 
     }
 
-    fn replicate(&mut self, tumeur: &Crowd, dt: f64) {
-        io::println(fmt!("%d @ %f\n",tumeur.size() as int, dt as float));
-
+    fn replicate(&mut self, tumeur: &Crowd, dt: f64) -> Option<@mut Cell> {
+        //io::println(fmt!("%d @ %f\n",tumeur.size() as int, dt as float));
         self.age+=1;
+        // if((self.age==50) && (rand::random::<f64>() > 0.9f64)) {
+        //     let new_center=self.center + Point::new_dir()*0.001f64;
+        //     self.age=0;
+        //     Some(@mut Cell{center: new_center, id: tumeur.size()+1, radius: self.radius, velocity: self.velocity*-1.0f64, acc: self.acc, generation: self.generation+1, age:0 })
+        // }
+        // else {
+            None
+        // }
     }
 
-    fn calc_rep_force(&self, tumeur: &Crowd) -> Point {
+    fn calc_forces(&self, tumeur: &Crowd) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
         for tumeur.cells.each |&cell| {
             if(cell.id != self.id) {
-                let dist_cells=(self.dist(cell)+2.0*self.radius)/seuil;
-                let factor = 1.0/pow(dist_cells,3.0)*1e-5 as f64;
-                force += (self.center-cell.center)*factor;
+                let dist_cells=(self.dist(cell)-2.0*self.radius);
+                let factor_rep = 1.0/pow(dist_cells/seuil,3.0)*1e-2f64;
+                let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2.0)*1e-4f64;
+                force += (self.center-cell.center)*(factor_rep+factor_attract);
             }
         }
         force
@@ -120,10 +129,16 @@ pub impl Crowd {
         self.cells.len()
     }
 
-    fn evolve(&self, dt: f64) {
+    fn evolve(&mut self, dt: f64) {
+        let mut new_cells : ~[@mut Cell] = ~[];
         for self.cells.each |cell| {
             cell.move(self, dt);
+            match cell.replicate(self, dt) {
+                None => (),
+                Some(new_born) => new_cells.push(new_born)
+            }
         }
+        self.cells.push_all(new_cells);
     }
 }
 
@@ -134,7 +149,7 @@ impl ToStr for Crowd {
         for self.cells.each |cell| {
             let mut lcell_desc=~"";
             lcell_desc.push_str(cell.to_str()); lcell_desc.push_str("\n");
-             desc.push_str(lcell_desc);
+            desc.push_str(lcell_desc);
         }
         desc
     }
