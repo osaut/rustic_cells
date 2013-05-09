@@ -14,8 +14,8 @@ struct Cell {
     radius: f64,
     velocity: Point,
     acc: Point,
-    generation: int,
-    age: int
+    generation: uint,
+    age: uint
 }
 
 pub impl Cell {

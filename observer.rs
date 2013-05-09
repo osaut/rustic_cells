@@ -79,7 +79,7 @@ impl Observer for DiskWriter {
         // Données sur les nœuds
         writer.write_str(fmt!("POINT_DATA %u\nSCALARS %s float\nLOOKUP_TABLE default\n", crowd.size(), self.fname));
         for crowd.cells.each |&cell| {
-            writer.write_str(fmt!("%u\n", cell.id));
+            writer.write_str(fmt!("%u\n", cell.age));
         }
     }
 
