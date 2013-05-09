@@ -10,7 +10,31 @@ pub trait Observer {
 }
 
 
+//
+// * Barre de progression
+//
+struct ProgressMeter {
+    freq: uint,
+    ticks: uint
+}
 
+pub impl ProgressMeter {
+    fn new(freq: uint) -> ProgressMeter {
+        ProgressMeter { freq: freq, ticks: 0}
+    }
+}
+
+
+impl Observer for ProgressMeter {
+    fn see(&mut self, time: f64, crowd: &Crowd) {
+        println(fmt!("%f : %u cellules", time as float, crowd.size()));
+    }
+
+    fn request_at(&mut self, time: f64) -> bool {
+        self.ticks+=1;
+        self.ticks % self.freq == 0
+    }
+}
 //
 // * Affichage à l'écran
 //
