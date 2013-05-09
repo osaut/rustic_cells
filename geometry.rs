@@ -200,7 +200,7 @@ fn test_div() {
 #[test]
 fn test_new_dir() {
     let pt = Point::new_dir();
-    assert!(pt.norm2()==1.0);
+    assert!((pt.norm2()-1.0).abs()<=1e-15f64);
 }
 
 #[test]
