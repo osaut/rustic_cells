@@ -27,8 +27,8 @@ pub impl ScreenPrinter {
 
 impl Observer for ScreenPrinter {
     fn see(&mut self, time: f64, crowd: &Crowd) {
-        io::println(fmt!("%f\n", time as float));
-        io::println(crowd.to_str());
+        println(fmt!("%f\n", time as float));
+        println(crowd.to_str());
     }
 
     fn request_at(&mut self, time: f64) -> bool {
@@ -61,7 +61,6 @@ pub impl DiskWriter {
 impl Observer for DiskWriter {
     fn see(&mut self, time: f64, crowd: &Crowd) {
         let outfile=self.new_filename();
-        io::println(fmt!("%f : %d cells -> %s.\n",time as float, crowd.size() as int, outfile));
         let writer = result::get( &io::file_writer( &Path(outfile), [io::Create, io::Truncate] ) );
 
         // Ecriture de l'entête
