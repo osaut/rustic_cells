@@ -40,7 +40,7 @@ impl ToStr for Point {
 // * Génération aléatoire
 //
 impl Rand for Point {
-    fn rand<R: Rng>(rng: &R) -> Point {
+    fn rand<R: Rng>(rng: &mut R) -> Point {
         Point { x: rng.gen::<f64>(), y: rng.gen::<f64>()}
     }
 }
