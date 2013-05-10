@@ -101,9 +101,16 @@ impl Observer for DiskWriter {
         }
 
         // Données sur les nœuds
-        writer.write_str(fmt!("POINT_DATA %u\nSCALARS %s float\nLOOKUP_TABLE default\n", crowd.size(), self.fname));
+        // * Age
+        writer.write_str(fmt!("POINT_DATA %u\nSCALARS %s float\nLOOKUP_TABLE default\n", crowd.size(), "age"));
         for crowd.cells.each |&cell| {
             writer.write_str(fmt!("%f\n", cell.age as float));
+        }
+        // * Vitesse
+        writer.write_str(fmt!("VECTORS %s float\n",  "vitesse"));
+        for crowd.cells.each |&cell| {
+            let speed=cell.velocity*1e3f64;
+            writer.write_str(fmt!("%f %f 0\n", speed.x as float, speed.y as float))
         }
     }
 
