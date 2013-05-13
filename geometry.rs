@@ -2,7 +2,7 @@ use core::rand::*;
 use core::f64::sqrt;
 use core::f64::pow;
 
-#[deriving(Eq)]
+#[deriving(Clone,Eq)]
 pub struct Point {
     x : f64,
     y : f64

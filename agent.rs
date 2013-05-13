@@ -8,7 +8,7 @@ mod geometry;
 //
 // Cellule
 //
-
+#[deriving(Clone)]
 struct Cell {
     center: Point,
     id: uint,
