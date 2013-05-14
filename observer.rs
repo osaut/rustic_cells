@@ -1,12 +1,12 @@
 use agent::*;
+use core::float::abs;
 
 mod agent;
 
-
 // Type Observer
 pub trait Observer {
-    fn see(&mut self, time: f64, crowd: &Crowd);
-    fn request_at(&mut self, time: f64) -> bool;
+    fn see(&self, time: f64, crowd: &Crowd);
+    fn request_at(&self, time: f64, dt: f64) -> bool;
 }
 
 
@@ -14,50 +14,52 @@ pub trait Observer {
 // * Barre de progression
 //
 struct ProgressMeter {
-    freq: uint,
-    ticks: uint
+    tmax: f64,
+    freq: uint
 }
 
 pub impl ProgressMeter {
-    fn new(freq: uint) -> ProgressMeter {
-        ProgressMeter { freq: freq, ticks: 0}
+    fn new(tmax: f64, freq: uint) -> ProgressMeter {
+        ProgressMeter {tmax: tmax, freq: freq}
     }
 }
 
 
 impl Observer for ProgressMeter {
-    fn see(&mut self, time: f64, crowd: &Crowd) {
+    fn see(&self, time: f64, crowd: &Crowd) {
         println(fmt!("%f : %u cellules", time as float, crowd.size()));
     }
 
-    fn request_at(&mut self, time: f64) -> bool {
-        self.ticks+=1;
-        self.ticks % self.freq == 0
+    fn request_at(&self, time: f64, dt: f64) -> bool {
+        let inter_size = self.tmax / (self.freq as f64);
+        let int_num=(time/inter_size) as uint;
+        (time-inter_size*(int_num as f64)).abs() < dt
     }
 }
 //
 // * Affichage à l'écran
 //
 struct ScreenPrinter {
-    freq: uint,
-    ticks: uint
+    tmax: f64,
+    freq: uint
 }
 
 pub impl ScreenPrinter {
-    fn new(freq: uint) -> ScreenPrinter {
-        ScreenPrinter { freq: freq, ticks: 0}
+    fn new(tmax: f64, freq: uint) -> ScreenPrinter {
+        ScreenPrinter { tmax: tmax, freq: freq}
     }
 }
 
 impl Observer for ScreenPrinter {
-    fn see(&mut self, time: f64, crowd: &Crowd) {
+    fn see(&self, time: f64, crowd: &Crowd) {
         println(fmt!("%f\n", time as float));
         println(crowd.to_str());
     }
 
-    fn request_at(&mut self, time: f64) -> bool {
-        self.ticks+=1;
-        self.ticks % self.freq == 0
+    fn request_at(&self, time: f64, dt: f64) -> bool {
+        let inter_size = self.tmax / (self.freq as f64);
+        let int_num=(time/inter_size) as uint;
+        (time-inter_size*(int_num as f64)).abs() < dt
     }
 }
 
@@ -65,26 +67,26 @@ impl Observer for ScreenPrinter {
 // * Sortie sur le disque
 //
 struct DiskWriter {
+    tmax: f64,
     freq: uint,
     fname: ~str,
-    curr_snap: uint,
-    ticks: uint
 }
 
 pub impl DiskWriter {
-    fn new(freq:uint, name: ~str) -> DiskWriter {
-        DiskWriter {freq: freq, fname: copy name, curr_snap: 0, ticks: 0}
+    fn new(tmax: f64, freq:uint, name: ~str) -> DiskWriter {
+        DiskWriter {tmax: tmax, freq: freq, fname: copy name}
     }
 
-    fn new_filename(&mut self) -> ~str {
-        self.curr_snap+=1;
-        fmt!("./%s-%03u.vtk", self.fname, self.curr_snap-1)
+    fn new_filename(&self, time: f64) -> ~str {
+        let inter_size = self.tmax / (self.freq as f64);
+        let int_num=(time/inter_size) as uint;
+        fmt!("./%s-%03u.vtk", self.fname, int_num)
     }
 }
 
 impl Observer for DiskWriter {
-    fn see(&mut self, time: f64, crowd: &Crowd) {
-        let outfile=self.new_filename();
+    fn see(&self, time: f64, crowd: &Crowd) {
+        let outfile=self.new_filename(time);
         let writer = result::get( &io::file_writer( &Path(outfile), [io::Create, io::Truncate] ) );
 
         // Ecriture de l'entête
@@ -114,9 +116,9 @@ impl Observer for DiskWriter {
         }
     }
 
-    fn request_at(&mut self, time: f64) -> bool {
-        self.ticks+=1;
-        self.ticks % self.freq == 0
+    fn request_at(&self, time: f64, dt: f64) -> bool {
+        let inter_size = self.tmax / (self.freq as f64);
+        let int_num=(time/inter_size) as uint;
+        (time-inter_size*(int_num as f64)).abs() < dt
     }
-
 }

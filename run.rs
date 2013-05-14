@@ -8,18 +8,26 @@ mod observer;
 fn main() {
 
     let mut cells=Crowd::new(1);
-
-    let mut obs = ProgressMeter::new(200);
-    let mut obs2 = DiskWriter::new(200, ~"cells");
+    let tmax=10f64;
     let dt=0.0001;
     let mut t=0.0;
-    for 100000.times {
+
+    for ((tmax/dt) as uint).times {
         let new_cells=cells.evolve(dt);
-        if(obs.request_at(t)) {
-            obs.see(t, &cells);
-        }
-        if(obs2.request_at(t)) {
-            obs2.see(t, &cells);
+
+
+        let obs_cells=copy cells; let st=t;
+        do spawn {
+            let obs = ProgressMeter::new(tmax, 100);
+            if(obs.request_at(st,dt)) {
+                obs.see(st, &obs_cells);
+            }
+
+            let obs2 = DiskWriter::new(tmax, 50, ~"cells");
+
+            if(obs2.request_at(st,dt)) {
+                obs2.see(st, &obs_cells);
+            }
         }
         cells=new_cells;
         t+=dt;
