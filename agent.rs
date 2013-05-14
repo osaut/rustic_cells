@@ -152,13 +152,14 @@ pub impl Crowd {
         let mut new_crowd : ~[~Cell] = ~[];
         for self.cells.each |cell| {
             if(!cell.should_die()) {
-                // Mouvement
-                new_crowd.push(~cell.move(self, dt));
 
                 // Prolifération
                 match cell.replicate(self, dt) {
-                    None => (),
-                    Some(new_born) => new_crowd.push(new_born)
+                    None => {new_crowd.push(~cell.move(self, dt));}, // Mouvement
+                    Some(new_born) => {
+                        new_crowd.push(new_born);
+                        new_crowd.push(~Cell{center: cell.center, id: cell.id, radius: cell.radius, velocity: cell.velocity, acc: cell.acc, generation: cell.generation, age: cell.age+dt, t_dup: self.time+calc_dup_time()});
+                    }
                 }
 
             }
