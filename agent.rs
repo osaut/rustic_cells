@@ -38,7 +38,7 @@ pub impl Cell {
 
 
         // Nouvelle vitesse ( + frottement)
-        let lambda : f64=100.0;
+        let lambda : f64=50.0;
         let denom : f64 = 1.0/(1.0+lambda*dt/2.0);
         let new_velocity=(self.velocity*(1.0-lambda*dt/2.0)+(self.acc+new_acc)*dt/(2.0 as f64))*denom;
 
