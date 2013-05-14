@@ -14,13 +14,14 @@ fn main() {
     let dt=0.0001;
     let mut t=0.0;
     for 100000.times {
-        cells.evolve(dt);
+        let new_cells=cells.evolve(dt);
         if(obs.request_at(t)) {
             obs.see(t, &cells);
         }
         if(obs2.request_at(t)) {
             obs2.see(t, &cells);
         }
+        cells=new_cells;
         t+=dt;
     }
 }

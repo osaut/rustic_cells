@@ -2,7 +2,6 @@
 use geometry::Point;
 use core::rand::RngUtil;
 use core::float::{pow,ln};
-use core::vec::reverse;
 mod geometry;
 
 //
@@ -29,29 +28,28 @@ pub impl Cell {
         Cell{ center: center, id: ident, radius: radius, velocity: Point::new(), acc: Point::new(), generation: 0, age:0f64, t_dup: t_curr+calc_dup_time()}
     }
 
-    fn move(&mut self, tumeur: &Crowd, dt: f64) {
-        let old_acc = copy self.acc;
+    fn move(&self, tumeur: &Crowd, dt: f64) -> Cell {
 
         // Nouvelle position
-        self.center+=self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
+        let new_center=self.center+self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
 
         // Nouvelle accélération
-        self.acc=self.calc_forces(tumeur)+Point::new_dir()*1e-5f64;
+        let new_acc=self.calc_forces(tumeur)+Point::new_dir()*1e-5f64;
 
 
         // Nouvelle vitesse ( + frottement)
         let lambda : f64=100.0;
         let denom : f64 = 1.0/(1.0+lambda*dt/2.0);
-        self.velocity=(self.velocity*(1.0-lambda*dt/2.0)+(self.acc+old_acc)*dt/(2.0 as f64))*denom;
+        let new_velocity=(self.velocity*(1.0-lambda*dt/2.0)+(self.acc+new_acc)*dt/(2.0 as f64))*denom;
 
+        Cell{center: new_center, id: self.id, radius: self.radius, velocity: new_velocity, acc: new_acc, generation: self.generation, age: self.age+dt, t_dup: self.t_dup}
     }
 
-    fn replicate(&mut self, tumeur: &Crowd, dt: f64) -> Option<@mut Cell> {
-        self.age+=dt;
+    fn replicate(&self, tumeur: &Crowd, dt: f64) -> Option<~Cell> {
         if(self.t_dup<=tumeur.time) {
             let new_center=self.center + Point::new_dir()*2.2f64*self.radius;
-            self.t_dup=tumeur.time+calc_dup_time();
-            Some(@mut Cell{center: new_center, id: tumeur.size()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: tumeur.time+calc_dup_time() })
+            //self.t_dup=tumeur.time+calc_dup_time();
+            Some(~Cell{center: new_center, id: tumeur.size()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: tumeur.time+calc_dup_time() })
         }
         else {
             None
@@ -131,16 +129,16 @@ fn test_new() {
 //
 
 struct Crowd {
-    cells : ~[@mut Cell],
+    cells : ~[~Cell],
     time : f64
 }
 
 pub impl Crowd {
     fn new(init_pop : uint) -> Crowd {
 
-        let mut pop : ~[@mut Cell]=~[];
+        let mut pop : ~[~Cell]=~[];
         for uint::range(1,init_pop+1) |num| {
-            let lonely_one = @mut Cell::new(num, 0.0f64);
+            let lonely_one = ~Cell::new(num, 0.0f64);
             pop.push(copy lonely_one);
         }
         Crowd{ cells : pop, time: 0.0}
@@ -150,31 +148,23 @@ pub impl Crowd {
         self.cells.len()
     }
 
-    fn evolve(&mut self, dt: f64) {
-        let mut new_cells : ~[@mut Cell] = ~[];
-        let mut dead_cells : ~[uint] = ~[];
-        for self.cells.eachi |index, cell| {
-            // Mouvement
-            cell.move(self, dt);
-            // Prolifération
-            match cell.replicate(self, dt) {
-                None => (),
-                Some(new_born) => new_cells.push(new_born)
-            }
-            // Apoptose
-            if(cell.should_die()) {
-                dead_cells.push(index);
+    fn evolve(&self, dt: f64) -> Crowd {
+        let mut new_crowd : ~[~Cell] = ~[];
+        for self.cells.each |cell| {
+            if(!cell.should_die()) {
+                // Mouvement
+                new_crowd.push(~cell.move(self, dt));
+
+                // Prolifération
+                match cell.replicate(self, dt) {
+                    None => (),
+                    Some(new_born) => new_crowd.push(new_born)
+                }
+
             }
         }
-        // On enlève les cellules mortes
-        for dead_cells.each_reverse |index| {
-            self.cells.remove(*index);
-        }
 
-        // Nouvelles cellules
-        self.cells.push_all(new_cells);
-
-        self.time+=dt;
+        Crowd{cells: new_crowd, time: self.time+dt}
     }
 }
 
