@@ -27,7 +27,7 @@ pub impl Cell {
         Cell{ center: center, id: ident, radius: radius, velocity: Point::new(), acc: Point::new(), generation: 0, age:0f64, t_dup: t_curr+calc_dup_time()}
     }
 
-    fn move(&self, tumeur: &Crowd, dt: f64) -> ~Cell {
+    fn move(&self, tumeur: &[~Cell], dt: f64) -> ~Cell {
 
         // Nouvelle position
         let new_center=self.center+self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
@@ -44,20 +44,20 @@ pub impl Cell {
         ~Cell{center: new_center, id: self.id, radius: self.radius, velocity: new_velocity, acc: new_acc, generation: self.generation, age: self.age+dt, t_dup: self.t_dup}
     }
 
-    fn replicate(&self, tumeur: &Crowd, time: f64) -> Option<~Cell> {
+    fn replicate(&self, tumeur: &[~Cell], time: f64) -> Option<~Cell> {
         if(self.t_dup<=time) {
             let new_center=self.center + Point::new_dir()*2.2f64*self.radius;
-            Some(~Cell{center: new_center, id: tumeur.cells.len()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: time+calc_dup_time() })
+            Some(~Cell{center: new_center, id: tumeur.len()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: time+calc_dup_time() })
         }
         else {
             None
         }
     }
 
-    fn calc_forces(&self, tumeur: &Crowd) -> Point {
+    fn calc_forces(&self, tumeur: &[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
-        for tumeur.cells.each |&cell| {
+        for tumeur.each |&cell| {
             if(cell.id != self.id) {
                 let dist_cells=f64::max((self.dist(cell)-2.0*self.radius),0.0f64)+1e-6f64;
                 if(dist_cells <= 20f64*self.radius) {
@@ -152,8 +152,8 @@ pub impl Crowd {
             if(!cell.should_die()) {
 
                 // Prolifération
-                match cell.replicate(self, self.time) {
-                    None => {new_crowd.push(cell.move(self, dt));}, // Mouvement
+                match cell.replicate(self.cells, self.time) {
+                    None => {new_crowd.push(cell.move(self.cells, dt));}, // Mouvement
                     Some(new_born) => {
                         new_crowd.push(new_born);
                         new_crowd.push(~Cell{center: cell.center, id: cell.id, radius: cell.radius, velocity: cell.velocity, acc: cell.acc, generation: cell.generation, age: cell.age+dt, t_dup: self.time+calc_dup_time()});
