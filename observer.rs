@@ -1,5 +1,4 @@
 use agent::*;
-use core::float::abs;
 
 mod agent;
 

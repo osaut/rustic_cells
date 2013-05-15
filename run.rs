@@ -29,6 +29,7 @@ fn main() {
                 obs2.see(st, &obs_cells);
             }
         }
+
         cells=new_cells;
         t+=dt;
     }

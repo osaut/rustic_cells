@@ -22,7 +22,6 @@ struct Cell {
 pub impl Cell {
     fn new(ident: uint, t_curr: f64) -> Cell {
         let radius = 5e-5f64;
-        //let r=rand::random::<float>();
         let center : Point =rand::random();
 
         Cell{ center: center, id: ident, radius: radius, velocity: Point::new(), acc: Point::new(), generation: 0, age:0f64, t_dup: t_curr+calc_dup_time()}
