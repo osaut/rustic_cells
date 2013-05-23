@@ -1,6 +1,6 @@
-use core::rand::*;
-use core::f64::sqrt;
-use core::f64::pow;
+use std::rand::*;
+use std::f64::sqrt;
+use std::f64::pow;
 
 #[deriving(Clone,Eq)]
 pub struct Point {

@@ -1,7 +1,9 @@
 
+extern mod extra;
+
 use geometry::Point;
-use core::rand::RngUtil;
-use core::float::{pow,ln};
+use std::rand::RngUtil;
+use std::float::{pow,ln};
 mod geometry;
 
 //
