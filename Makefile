@@ -1,17 +1,17 @@
-RUST=rust
+RUST=rustc
 
 all: exe
 
 
-exe: *.rs 
-	$(RUST) build --opt-level=3 run.rs
+exe: *.rs
+	$(RUST) --opt-level=3 -o ./cells run.rs
 
 
 run: exe
 	./run
 
 test: *.rs
-	$(RUST) test run.rs 
+	$(RUST) run.rs --test -o cells-test
 
 clean:
-	-rm ./run ./runtest~ *.vtk	
+	-rm ./cells ./cells-test *.vtk
