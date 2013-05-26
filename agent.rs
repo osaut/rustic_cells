@@ -1,6 +1,4 @@
-
 extern mod extra;
-
 use geometry::Point;
 use std::rand;
 use std::rand::RngUtil;
@@ -59,7 +57,7 @@ impl Cell {
         }
     }
 
-    fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
+    priv fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
         for tumeur.each |&cell| {
@@ -156,19 +154,45 @@ impl Crowd {
     }
 
     pub fn evolve(&self, dt: f64) -> Crowd {
-        let mut new_crowd : ~[~Cell] = ~[];
-        for self.cells.each |cell| {
-            if(!cell.should_die()) {
+        let shared_crowd = extra::arc::ARC(copy self.cells);
+        let mut ftrs  = ~[];
+        let time=self.time;
 
-                // Prolifération
-                match cell.replicate(&self.cells, self.time) {
-                    None => {new_crowd.push(cell.move(&self.cells, dt));}, // Mouvement
-                    Some(new_born) => {
-                        new_crowd.push(new_born);
-                        new_crowd.push(~Cell{center: cell.center, id: cell.id, radius: cell.radius, velocity: cell.velocity, acc: cell.acc, generation: cell.generation, age: cell.age+dt, t_dup: self.time+calc_dup_time()});
+        for self.cells.each |&cell| {
+                let (port, chan)  = stream();
+                chan.send(shared_crowd.clone());
+
+                ftrs.push(
+                    do extra::future::spawn {
+                        let f_res : Option<~[~Cell]>;
+                        let shared_arc= port.recv();
+                        let shared_cells = shared_arc.get();
+
+                        if(!cell.should_die()) {
+                            match cell.replicate(shared_cells, time) {
+                                None => { f_res = Some(~[cell.move(shared_cells, dt)]); },
+                                Some(new_born) => {
+                                    let new_age=cell.age+dt;
+                                    let mut loc_crowd : ~[~Cell] = ~[];
+                                    loc_crowd.push(new_born);
+                                    loc_crowd.push(~Cell{center: cell.center, id: cell.id, radius: cell.radius, velocity: cell.velocity, acc: cell.acc, generation: cell.generation, age: new_age, t_dup: time+calc_dup_time()});
+                                    f_res=Some(loc_crowd);
+                                }
+                            }
+                        }
+                        else {
+                            f_res=None;
+                        }
+                        f_res
                     }
-                }
+                );
+        }
 
+        let mut new_crowd : ~[~Cell] = ~[];
+        for ftrs.each_mut  |ft|  {
+            match ft.get() {
+                None => {},
+                Some(cells) => { new_crowd+=cells; }
             }
         }
 
