@@ -1,4 +1,10 @@
+// strcat: rusti: trait Foo { fn foo(&self); } trait Bar {}; impl<T: Bar> Foo
+// for T { fn foo(&self) { println("default impl") } }; impl Bar for int {};
+// 5.foo()
+
 use agent::*;
+use std::io;
+use std::result;
 
 mod agent;
 
@@ -6,6 +12,11 @@ mod agent;
 pub trait Observer {
     fn see(&self, time: f64, crowd: &Crowd);
     fn request_at(&self, time: f64, dt: f64) -> bool;
+    // fn request_at(&self, time: f64, dt: f64) -> bool {
+    //     let inter_size = self.tmax / (self.freq as f64);
+    //     let int_num=(time/inter_size) as uint;
+    //     (time-inter_size*(int_num as f64)).abs() < dt
+    // }
 }
 
 
@@ -17,15 +28,15 @@ struct ProgressMeter {
     freq: uint
 }
 
-pub impl ProgressMeter {
-    fn new(tmax: f64, freq: uint) -> ProgressMeter {
+impl ProgressMeter {
+    pub fn new(tmax: f64, freq: uint) -> ProgressMeter {
         ProgressMeter {tmax: tmax, freq: freq}
     }
 }
 
 
 impl Observer for ProgressMeter {
-    fn see(&self, time: f64, crowd: &Crowd) {
+    pub fn see(&self, time: f64, crowd: &Crowd) {
         println(fmt!("%f : %u cellules", time as float, crowd.size()));
     }
 
@@ -43,8 +54,8 @@ struct ScreenPrinter {
     freq: uint
 }
 
-pub impl ScreenPrinter {
-    fn new(tmax: f64, freq: uint) -> ScreenPrinter {
+impl ScreenPrinter {
+    pub fn new(tmax: f64, freq: uint) -> ScreenPrinter {
         ScreenPrinter { tmax: tmax, freq: freq}
     }
 }
@@ -71,12 +82,12 @@ struct DiskWriter {
     fname: ~str,
 }
 
-pub impl DiskWriter {
-    fn new(tmax: f64, freq:uint, name: ~str) -> DiskWriter {
+impl DiskWriter {
+    pub fn new(tmax: f64, freq:uint, name: ~str) -> DiskWriter {
         DiskWriter {tmax: tmax, freq: freq, fname: copy name}
     }
 
-    fn new_filename(&self, time: f64) -> ~str {
+    pub fn new_filename(&self, time: f64) -> ~str {
         let inter_size = self.tmax / (self.freq as f64);
         let int_num=(time/inter_size) as uint;
         fmt!("./%s-%03u.vtk", self.fname, int_num)
@@ -84,7 +95,7 @@ pub impl DiskWriter {
 }
 
 impl Observer for DiskWriter {
-    fn see(&self, time: f64, crowd: &Crowd) {
+    pub fn see(&self, time: f64, crowd: &Crowd) {
         let outfile=self.new_filename(time);
         let writer = result::get( &io::file_writer( &Path(outfile), [io::Create, io::Truncate] ) );
 

@@ -1,6 +1,8 @@
-use std::rand::*;
-use std::f64::sqrt;
-use std::f64::pow;
+extern mod std;
+use std::rand;
+use std::rand::{Rand,Rng, RngUtil};
+use std::ops;
+use std::f64::{pow,sqrt};
 
 #[deriving(Clone,Eq)]
 pub struct Point {
@@ -8,22 +10,22 @@ pub struct Point {
     y : f64
 }
 
-pub impl Point {
-    fn new() -> Point {
+impl Point {
+    pub fn new() -> Point {
         Point{x:0.0, y:0.0}
     }
 
-    fn new_dir() -> Point {
+    pub fn new_dir() -> Point {
         let mut pt : Point =rand::random();
         pt-=0.5f64;
         pt/pt.norm2()
     }
 
-    fn norm2(&self) -> f64 {
+    pub fn norm2(&self) -> f64 {
         sqrt(pow(self.x,2.0)+pow(self.y,2.0))
     }
 
-    fn dist(&self, other : &Point) -> f64 {
+    pub fn dist(&self, other : &Point) -> f64 {
         (*self-*other).norm2()
     }
 
@@ -40,6 +42,7 @@ impl ToStr for Point {
 // * Génération aléatoire
 //
 impl Rand for Point {
+    #[inline]
     fn rand<R: Rng>(rng: &mut R) -> Point {
         Point { x: rng.gen::<f64>(), y: rng.gen::<f64>()}
     }
@@ -144,7 +147,7 @@ fn test_dist() {
     let pt2=@Point{ x: 2.0, y: 3.0};
     let distance=pt1.dist(pt2);
 
-    assert!(distance==f64::sqrt(2.0));
+    assert!(distance==sqrt(2.0));
 }
 
 #[test]

@@ -2,8 +2,11 @@
 extern mod extra;
 
 use geometry::Point;
+use std::rand;
 use std::rand::RngUtil;
-use std::float::{pow,ln};
+use std::f64::{pow,ln};
+use std::f64;
+use std::uint;
 mod geometry;
 
 //
@@ -21,15 +24,15 @@ struct Cell {
     t_dup: f64
 }
 
-pub impl Cell {
-    fn new(ident: uint, t_curr: f64) -> Cell {
+impl Cell {
+    pub fn new(ident: uint, t_curr: f64) -> Cell {
         let radius = 5e-5f64;
         let center : Point =rand::random();
 
         Cell{ center: center, id: ident, radius: radius, velocity: Point::new(), acc: Point::new(), generation: 0, age:0f64, t_dup: t_curr+calc_dup_time()}
     }
 
-    fn move(&self, tumeur: &[~Cell], dt: f64) -> ~Cell {
+    pub fn move(&self, tumeur: &~[~Cell], dt: f64) -> ~Cell {
 
         // Nouvelle position
         let new_center=self.center+self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
@@ -46,7 +49,7 @@ pub impl Cell {
         ~Cell{center: new_center, id: self.id, radius: self.radius, velocity: new_velocity, acc: new_acc, generation: self.generation, age: self.age+dt, t_dup: self.t_dup}
     }
 
-    fn replicate(&self, tumeur: &[~Cell], time: f64) -> Option<~Cell> {
+    pub fn replicate(&self, tumeur: &~[~Cell], time: f64) -> Option<~Cell> {
         if(self.t_dup<=time) {
             let new_center=self.center + Point::new_dir()*2.2f64*self.radius;
             Some(~Cell{center: new_center, id: tumeur.len()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: time+calc_dup_time() })
@@ -56,7 +59,7 @@ pub impl Cell {
         }
     }
 
-    fn calc_forces(&self, tumeur: &[~Cell]) -> Point {
+    fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
         for tumeur.each |&cell| {
@@ -72,22 +75,22 @@ pub impl Cell {
         force
     }
 
-    fn should_die(&self) -> bool {
+    pub fn should_die(&self) -> bool {
         self.age > 5.0f64+rand::random::<f64>()
     }
 
     #[inline(always)]
-    fn x(&self) -> f64 {
+    pub fn x(&self) -> f64 {
         self.center.x
     }
 
     #[inline(always)]
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.center.y
     }
 
 
-    fn dist(&self, other: &Cell) -> f64 {
+    pub fn dist(&self, other: &Cell) -> f64 {
         self.center.dist(&other.center)
     }
 
@@ -133,8 +136,8 @@ struct Crowd {
     time : f64
 }
 
-pub impl Crowd {
-    fn new(init_pop : uint) -> Crowd {
+impl Crowd {
+    pub fn new(init_pop : uint) -> Crowd {
 
         let mut pop : ~[~Cell]=~[];
         for uint::range(1,init_pop+1) |num| {
@@ -144,18 +147,18 @@ pub impl Crowd {
         Crowd{ cells : pop, time: 0.0}
     }
 
-    fn size(&self) -> uint {
+    pub fn size(&self) -> uint {
         self.cells.len()
     }
 
-    fn evolve(&self, dt: f64) -> Crowd {
+    pub fn evolve(&self, dt: f64) -> Crowd {
         let mut new_crowd : ~[~Cell] = ~[];
         for self.cells.each |cell| {
             if(!cell.should_die()) {
 
                 // Prolifération
-                match cell.replicate(self.cells, self.time) {
-                    None => {new_crowd.push(cell.move(self.cells, dt));}, // Mouvement
+                match cell.replicate(&self.cells, self.time) {
+                    None => {new_crowd.push(cell.move(&self.cells, dt));}, // Mouvement
                     Some(new_born) => {
                         new_crowd.push(new_born);
                         new_crowd.push(~Cell{center: cell.center, id: cell.id, radius: cell.radius, velocity: cell.velocity, acc: cell.acc, generation: cell.generation, age: cell.age+dt, t_dup: self.time+calc_dup_time()});
