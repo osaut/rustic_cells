@@ -109,7 +109,7 @@ impl Observer for DiskWriter {
 
         // Coordonnées des cellules
         for crowd.cells.each |&cell| {
-            writer.write_str(fmt!("%f %f 0\n",cell.x() as float, cell.y() as float))
+            writer.write_str(fmt!("%f %f %f\n",cell.x() as float, cell.y() as float, cell.z() as float))
         }
 
         // Données sur les nœuds
@@ -122,7 +122,7 @@ impl Observer for DiskWriter {
         writer.write_str(fmt!("VECTORS %s float\n",  "vitesse"));
         for crowd.cells.each |&cell| {
             let speed=cell.velocity*1e3f64;
-            writer.write_str(fmt!("%f %f 0\n", speed.x as float, speed.y as float))
+            writer.write_str(fmt!("%f %f %f\n", speed.x as float, speed.y as float, speed.z as float))
         }
     }
 

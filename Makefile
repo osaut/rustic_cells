@@ -12,6 +12,7 @@ run: exe
 
 test: *.rs
 	$(RUST) run.rs --test -o cells-test
+	./cells-test
 
 clean:
 	-rm ./cells ./cells-test *.vtk

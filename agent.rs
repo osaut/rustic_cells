@@ -88,6 +88,10 @@ impl Cell {
     pub fn y(&self) -> f64 {
         self.center.y
     }
+    #[inline(always)]
+    pub fn z(&self) -> f64 {
+        self.center.z
+    }
 
 
     pub fn dist(&self, other: &Cell) -> f64 {
@@ -98,7 +102,7 @@ impl Cell {
 
 impl ToStr for Cell {
     fn to_str(&self) -> ~str {
-        fmt!("%d @ (%f, %f)", self.id as int, self.center.x as float, self.center.y as float)
+        fmt!("%d @ (%f, %f, %f)", self.id as int, self.center.x as float, self.center.y as float, self.z() as float)
     }
 }
 
