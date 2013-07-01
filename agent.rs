@@ -62,13 +62,13 @@ impl Cell {
     fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
-        for tumeur.each |&cell| {
+        for tumeur.iter().advance() |&cell| {
             if(cell.id != self.id) {
                 let dist_cells=f64::max((self.dist(cell)-2.0*self.radius),0.0f64)+1e-6f64;
                 if(dist_cells <= 20f64*self.radius) {
                    let factor_rep =  1.0/pow(dist_cells/seuil,3.0)*1e-7f64 ;
                     let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2.0)*1e-7f64;
-                    force += (self.center-cell.center)*(factor_rep+factor_attract);
+                    force = force + (self.center-cell.center)*(factor_rep+factor_attract);
                 }
             }
         }
@@ -157,7 +157,7 @@ impl Crowd {
 
     pub fn evolve(&self, dt: f64) -> Crowd {
         let mut new_crowd : ~[~Cell] = ~[];
-        for self.cells.each |cell| {
+        for self.cells.iter().advance() |cell| {
             if(!cell.should_die()) {
 
                 // Prolifération
@@ -180,7 +180,7 @@ impl Crowd {
 impl ToStr for Crowd {
     fn to_str(&self) -> ~str {
         let mut desc =~"";
-        for self.cells.each |cell| {
+        for self.cells.iter().advance() |cell| {
             let mut lcell_desc=~"";
             lcell_desc.push_str(cell.to_str()); lcell_desc.push_str("\n");
             desc.push_str(lcell_desc);

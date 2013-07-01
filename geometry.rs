@@ -18,7 +18,7 @@ impl Point {
 
     pub fn new_dir() -> Point {
         let mut pt : Point =rand::random();
-        pt-=0.5f64;
+        pt=pt-0.5f64;
         pt/pt.norm2()
     }
 

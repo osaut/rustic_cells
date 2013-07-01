@@ -108,19 +108,19 @@ impl Observer for DiskWriter {
 
 
         // Coordonnées des cellules
-        for crowd.cells.each |&cell| {
+        for crowd.cells.iter().advance() |&cell| {
             writer.write_str(fmt!("%f %f %f\n",cell.x() as float, cell.y() as float, cell.z() as float))
         }
 
         // Données sur les nœuds
         // * Age
         writer.write_str(fmt!("POINT_DATA %u\nSCALARS %s float\nLOOKUP_TABLE default\n", crowd.size(), "age"));
-        for crowd.cells.each |&cell| {
+        for crowd.cells.iter().advance() |&cell| {
             writer.write_str(fmt!("%f\n", cell.age as float));
         }
         // * Vitesse
         writer.write_str(fmt!("VECTORS %s float\n",  "vitesse"));
-        for crowd.cells.each |&cell| {
+        for crowd.cells.iter().advance() |&cell| {
             let speed=cell.velocity*1e3f64;
             writer.write_str(fmt!("%f %f %f\n", speed.x as float, speed.y as float, speed.z as float))
         }
