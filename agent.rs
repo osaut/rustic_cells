@@ -3,10 +3,8 @@ extern mod extra;
 
 use geometry::Point;
 use std::rand;
-use std::rand::{Rand,rng};
 use std::num::{pow,ln};
 use std::f64;
-use std::uint;
 mod geometry;
 
 //

@@ -1,5 +1,5 @@
-use agent::{Cell, Crowd};
-use observer::{ProgressMeter, DiskWriter};
+use agent::Crowd;
+use observer::{Observer, ProgressMeter, DiskWriter};
 
 mod agent;
 mod geometry;
@@ -19,15 +19,15 @@ fn main() {
         let obs_cells=cells; let st=t;
         do spawn {
             let obs = ProgressMeter::new(tmax, 100);
-            // if(obs.request_at(st,dt)) {
-            //     obs.see(st, &obs_cells);
-            // }
+            if(obs.request_at(st,dt)) {
+                obs.see(st, &obs_cells);
+            }
 
             let obs2 = DiskWriter::new(tmax, 50, ~"cells");
 
-            // if(obs2.request_at(st,dt)) {
-            //     obs2.see(st, &obs_cells);
-            // }
+            if(obs2.request_at(st,dt)) {
+                obs2.see(st, &obs_cells);
+            }
         }
 
         cells=new_cells;

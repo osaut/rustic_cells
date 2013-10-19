@@ -4,8 +4,6 @@
 
 use agent::Crowd;
 use std::io;
-use std::result;
-use std::os;
 mod agent;
 
 // Type Observer
