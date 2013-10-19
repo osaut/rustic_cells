@@ -62,9 +62,9 @@ impl Cell {
     fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
-        for &cell in tumeur.iter() {
+        for cell in tumeur.iter() {
             if(cell.id != self.id) {
-                let dist_cells=f64::max((self.dist(cell)-2.0*self.radius),0.0f64)+1e-6f64;
+                let dist_cells=f64::max((self.dist(*cell)-2.0*self.radius),0.0f64)+1e-6f64;
                 if(dist_cells <= 20f64*self.radius) {
                    let factor_rep =  1.0/pow(dist_cells/seuil,3.0)*1e-7f64 ;
                     let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2.0)*1e-7f64;

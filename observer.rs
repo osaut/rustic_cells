@@ -5,7 +5,7 @@
 use agent::Crowd;
 use std::io;
 use std::result;
-
+use std::os;
 mod agent;
 
 // Type Observer
@@ -35,7 +35,7 @@ impl ProgressMeter {
 }
 
 
-pub impl Observer for ProgressMeter {
+impl Observer for ProgressMeter {
     fn see(&self, time: f64, crowd: &Crowd) {
         println!("{:f} : {:u} cellules", time, crowd.size());
     }
@@ -61,12 +61,12 @@ impl ScreenPrinter {
 }
 
 impl Observer for ScreenPrinter {
-    pub fn see(&self, time: f64, crowd: &Crowd) {
+    fn see(&self, time: f64, crowd: &Crowd) {
         println!("{:f}\n", time);
         println(crowd.to_str());
     }
 
-    pub fn request_at(&self, time: f64, dt: f64) -> bool {
+    fn request_at(&self, time: f64, dt: f64) -> bool {
         let inter_size = self.tmax / (self.freq as f64);
         let int_num=(time/inter_size) as uint;
         (time-inter_size*(int_num as f64)).abs() < dt
@@ -95,9 +95,10 @@ impl DiskWriter {
 }
 
 impl Observer for DiskWriter {
-    pub fn see(&self, time: f64, crowd: &Crowd) {
+    fn see(&self, time: f64, crowd: &Crowd) {
         let outfile=self.new_filename(time);
-        let writer_result = io::file_writer( &Path(outfile), [io::Create, io::Truncate] );
+        let file_path=Path::new(outfile);
+        let writer_result = io::file_writer(~file_path, [io::Create, io::Truncate] );
 
         if writer_result.is_ok() {
             let writer=writer_result.unwrap();
@@ -130,7 +131,7 @@ impl Observer for DiskWriter {
         }
     }
 
-    pub fn request_at(&self, time: f64, dt: f64) -> bool {
+    fn request_at(&self, time: f64, dt: f64) -> bool {
         let inter_size = self.tmax / (self.freq as f64);
         let int_num=(time/inter_size) as uint;
         (time-inter_size*(int_num as f64)).abs() < dt
