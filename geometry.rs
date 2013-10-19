@@ -1,8 +1,8 @@
 extern mod std;
 use std::rand;
-use std::rand::{Rand,Rng, RngUtil};
+use std::rand::{Rand,Rng};
 use std::ops;
-use std::f64::{pow,sqrt};
+use std::num::{pow,sqrt};
 
 #[deriving(Clone,Eq)]
 pub struct Point {
@@ -35,7 +35,7 @@ impl Point {
 
 impl ToStr for Point {
     fn to_str(&self) -> ~str {
-        fmt!("(%f, %f, %f)", self.x as float, self.y as float, self.z as float)
+        format!("({:f}, {:f}, {:f})", self.x, self.y, self.z)
     }
 }
 

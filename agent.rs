@@ -3,8 +3,8 @@ extern mod extra;
 
 use geometry::Point;
 use std::rand;
-use std::rand::RngUtil;
-use std::f64::{pow,ln};
+use std::rand::{Rand,rng};
+use std::num::{pow,ln};
 use std::f64;
 use std::uint;
 mod geometry;
@@ -62,7 +62,7 @@ impl Cell {
     fn calc_forces(&self, tumeur: &~[~Cell]) -> Point {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
-        for tumeur.iter().advance() |&cell| {
+        for &cell in tumeur.iter() {
             if(cell.id != self.id) {
                 let dist_cells=f64::max((self.dist(cell)-2.0*self.radius),0.0f64)+1e-6f64;
                 if(dist_cells <= 20f64*self.radius) {
@@ -102,7 +102,7 @@ impl Cell {
 
 impl ToStr for Cell {
     fn to_str(&self) -> ~str {
-        fmt!("%d @ (%f, %f, %f)", self.id as int, self.center.x as float, self.center.y as float, self.z() as float)
+        format!("{:u} @ ({:f}, {:f}, {:f})", self.id, self.center.x, self.center.y, self.z())
     }
 }
 
@@ -144,9 +144,9 @@ impl Crowd {
     pub fn new(init_pop : uint) -> Crowd {
 
         let mut pop : ~[~Cell]=~[];
-        for uint::range(1,init_pop+1) |num| {
+        for num in range(1,init_pop+1) {
             let lonely_one = ~Cell::new(num, 0.0f64);
-            pop.push(copy lonely_one);
+            pop.push(lonely_one);
         }
         Crowd{ cells : pop, time: 0.0}
     }
@@ -157,7 +157,7 @@ impl Crowd {
 
     pub fn evolve(&self, dt: f64) -> Crowd {
         let mut new_crowd : ~[~Cell] = ~[];
-        for self.cells.iter().advance() |cell| {
+        for cell in self.cells.iter() {
             if(!cell.should_die()) {
 
                 // Prolifération
@@ -172,7 +172,7 @@ impl Crowd {
             }
         }
 
-        Crowd{cells: new_crowd, time: self.time+dt}
+        Crowd {cells: new_crowd, time: self.time+dt}
     }
 }
 
@@ -180,7 +180,7 @@ impl Crowd {
 impl ToStr for Crowd {
     fn to_str(&self) -> ~str {
         let mut desc =~"";
-        for self.cells.iter().advance() |cell| {
+        for cell in self.cells.iter() {
             let mut lcell_desc=~"";
             lcell_desc.push_str(cell.to_str()); lcell_desc.push_str("\n");
             desc.push_str(lcell_desc);

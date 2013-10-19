@@ -1,5 +1,5 @@
-use agent::*;
-use observer::*;
+use agent::{Cell, Crowd};
+use observer::{ProgressMeter, DiskWriter};
 
 mod agent;
 mod geometry;
@@ -12,11 +12,11 @@ fn main() {
     let dt=0.0001;
     let mut t=0.0;
 
-    for ((tmax/dt) as uint).times {
+    for _ in range(0,(tmax/dt) as uint){
         let new_cells=cells.evolve(dt);
 
 
-        let obs_cells=copy cells; let st=t;
+        let obs_cells=cells; let st=t;
         do spawn {
             let obs = ProgressMeter::new(tmax, 100);
             if(obs.request_at(st,dt)) {
