@@ -1,9 +1,6 @@
-// strcat: rusti: trait Foo { fn foo(&self); } trait Bar {}; impl<T: Bar> Foo
-// for T { fn foo(&self) { println("default impl") } }; impl Bar for int {};
-// 5.foo()
-
 use agent::Crowd;
-use std::io;
+use std::io::fs::File;
+use std::io::{Write, Truncate};
 mod agent;
 
 // Type Observer
@@ -96,35 +93,37 @@ impl Observer for DiskWriter {
     fn see(&self, time: f64, crowd: &Crowd) {
         let outfile=self.new_filename(time);
         let file_path=Path::new(outfile);
-        let writer_result = io::file_writer(~file_path, [io::Create, io::Truncate] );
 
-        if writer_result.is_ok() {
-            let writer=writer_result.unwrap();
+        match File::open_mode(&file_path, Truncate , Write)  {
+            None => fail!(),
 
-            // Ecriture de l'entête
-            writer.write_str("# vtk DataFile Version 3.0\n");
-            writer.write_str("Rusty_Cells\n");
-            writer.write_str("ASCII\n");
-            writer.write_str("DATASET UNSTRUCTURED_GRID\n");
-            writer.write_str(format!("POINTS {:u} float\n", crowd.size()));
+            Some(ref mut f) => {
+                let writer= f as &mut Writer;
+                // Ecriture de l'entête
+                write!(writer, "{:c} vtk DataFile Version 3.0\n", '#');
+                write!(writer, "Rusty_Cells\n");
+                write!(writer, "ASCII\n");
+                write!(writer, "DATASET UNSTRUCTURED_GRID\n");
+                write!(writer, "POINTS {:u} float\n", crowd.size());
 
 
-            // Coordonnées des cellules
-            for cell in crowd.cells.iter() {
-                writer.write_str(format!("{:f} {:f} {:f}\n",cell.x(), cell.y(), cell.z()))
-            }
+                // Coordonnées des cellules
+                for cell in crowd.cells.iter() {
+                    write!(writer, "{:f} {:f} {:f}\n", cell.x(), cell.y(), cell.z() );
+                }
 
-            // Données sur les nœuds
-            // * Age
-            writer.write_str(format!("POINT_DATA {:u}\nSCALARS {:s} float\nLOOKUP_TABLE default\n", crowd.size(), "age"));
-            for cell in crowd.cells.iter() {
-                writer.write_str(format!("{:f}\n", cell.age));
-            }
-            // * Vitesse
-            writer.write_str(format!("VECTORS {:s} float\n",  "vitesse"));
-            for cell in crowd.cells.iter() {
-                let speed=cell.velocity*1e3f64;
-                writer.write_str(format!("{:f} {:f} {:f}\n", speed.x, speed.y, speed.z))
+                // Données sur les nœuds
+                // * Age
+                 write!(writer,"POINT_DATA {:u}\nSCALARS {:s} float\nLOOKUP_TABLE default\n", crowd.size(), "age");
+                for cell in crowd.cells.iter() {
+                    write!(writer,"{:f}\n", cell.age);
+                }
+                // * Vitesse
+                write!(writer,"VECTORS {:s} float\n",  "vitesse");
+                for cell in crowd.cells.iter() {
+                    let speed=cell.velocity*1e3f64;
+                    write!(writer,"{:f} {:f} {:f}\n", speed.x, speed.y, speed.z)
+                }
             }
         }
     }
