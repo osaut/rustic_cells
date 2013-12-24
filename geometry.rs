@@ -135,7 +135,7 @@ impl<Result, Rhs: RhsOfDiv<Result> > ops::Div<Rhs, Result> for Point {
 //
 #[test]
 fn test_norm2() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 1.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 1.0});
     let norm=pt1.norm2();
 
     assert!(norm==sqrt(6.0));
@@ -144,8 +144,8 @@ fn test_norm2() {
 
 #[test]
 fn test_dist() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 0.0};
-    let pt2=@Point{ x: 2.0, y: 3.0, z: 1.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 0.0});
+    let pt2=Rc<Point>(Point{ x: 2.0, y: 3.0, z: 1.0});
     let distance=pt1.dist(pt2);
 
     assert!(distance==sqrt(3.0));
@@ -153,8 +153,8 @@ fn test_dist() {
 
 #[test]
 fn test_add() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 1.0};
-    let pt2=@Point{ x: -1.0, y: 3.0, z: 0.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 1.0});
+    let pt2=Rc<Point>(Point{ x: -1.0, y: 3.0, z: 0.0});
     let pt3=*pt1+*pt2;
 
     assert!((pt3.x==0.0)&&(pt3.y==5.0)&&(pt3.z==1.0));
@@ -170,8 +170,8 @@ fn test_add_float() {
 
 #[test]
 fn test_sub() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 0.0};
-    let pt2=@Point{ x: -1.0, y: 3.0, z: -1.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 0.0});
+    let pt2=Rc<Point>(Point{ x: -1.0, y: 3.0, z: -1.0});
     let pt3=*pt1-*pt2;
     assert!((pt3.x==2.0)&&(pt3.y==-1.0)&&(pt3.z==1.0));
 }
@@ -183,8 +183,8 @@ fn test_sub_float() {
 
 #[test]
 fn test_mult() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 1.0};
-    let pt2=@Point{ x: -1.0, y: 3.0, z: 0.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 1.0});
+    let pt2=Rc<Point>(Point{ x: -1.0, y: 3.0, z: 0.0});
     let pt3=(*pt1)*(*pt2);
     assert!((pt3.x==-1.0)&&(pt3.y==6.0)&&(pt3.z==0.0));
     let pt4=(*pt1)*(2.0 as f64);
@@ -193,8 +193,8 @@ fn test_mult() {
 
 #[test]
 fn test_div() {
-    let pt1=@Point{ x: 1.0, y: 2.0, z: 2.0};
-    let pt2=@Point{ x: -1.0, y: 3.0, z: -2.0};
+    let pt1=Rc<Point>(Point{ x: 1.0, y: 2.0, z: 2.0});
+    let pt2=Rc<Point>(Point{ x: -1.0, y: 3.0, z: -2.0});
     let pt3=(*pt1)/(*pt2);
     assert!(pt3.dist(&Point{x:-1.0, y:2.0/3.0, z: -1.0})==0.0);
     let pt4=(*pt1)/(2.0 as f64);

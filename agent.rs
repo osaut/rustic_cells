@@ -133,7 +133,7 @@ fn test_new() {
 // Population
 //
 
-struct Crowd {
+pub struct Crowd {
     cells : ~[~Cell],
     time : f64
 }

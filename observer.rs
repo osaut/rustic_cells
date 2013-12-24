@@ -18,7 +18,7 @@ pub trait Observer {
 //
 // * Barre de progression
 //
-struct ProgressMeter {
+pub struct ProgressMeter {
     tmax: f64,
     freq: uint
 }
@@ -44,7 +44,7 @@ impl Observer for ProgressMeter {
 //
 // * Affichage à l'écran
 //
-struct ScreenPrinter {
+pub struct ScreenPrinter {
     tmax: f64,
     freq: uint
 }
@@ -71,7 +71,7 @@ impl Observer for ScreenPrinter {
 //
 // * Sortie sur le disque
 //
-struct DiskWriter {
+pub struct DiskWriter {
     tmax: f64,
     freq: uint,
     fname: ~str,
