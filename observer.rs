@@ -58,7 +58,7 @@ impl ScreenPrinter {
 impl Observer for ScreenPrinter {
     fn see(&self, time: f64, crowd: &Crowd) {
         println!("{:f}\n", time);
-        println(crowd.to_str());
+        println!("{:s}",crowd.to_str());
     }
 
     fn request_at(&self, time: f64, dt: f64) -> bool {
