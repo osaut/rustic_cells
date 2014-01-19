@@ -24,7 +24,7 @@ impl Point {
     }
 
     pub fn norm2(&self) -> f64 {
-        sqrt(pow(self.x,2.0)+pow(self.y,2.0)+pow(self.z,2.0))
+        sqrt(pow(self.x,2)+pow(self.y,2)+pow(self.z,2))
     }
 
     pub fn dist(&self, other : &Point) -> f64 {

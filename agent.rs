@@ -33,7 +33,7 @@ impl Cell {
     pub fn move(&self, tumeur: &~[~Cell], dt: f64) -> ~Cell {
 
         // Nouvelle position
-        let new_center=self.center+self.velocity+self.acc*(0.5*pow(dt,2.0) as f64);
+        let new_center=self.center+self.velocity+self.acc*(0.5*pow(dt,2) as f64);
 
         // Nouvelle accélération
         let new_acc=self.calc_forces(tumeur)+Point::new_dir()*1e-5f64;
@@ -64,8 +64,8 @@ impl Cell {
             if(cell.id != self.id) {
                 let dist_cells=f64::max((self.dist(*cell)-2.0*self.radius),0.0f64)+1e-6f64;
                 if(dist_cells <= 20f64*self.radius) {
-                   let factor_rep =  1.0/pow(dist_cells/seuil,3.0)*1e-7f64 ;
-                    let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2.0)*1e-7f64;
+                   let factor_rep =  1.0/pow(dist_cells/seuil,3)*1e-7f64 ;
+                    let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2)*1e-7f64;
                     force = force + (self.center-cell.center)*(factor_rep+factor_attract);
                 }
             }
