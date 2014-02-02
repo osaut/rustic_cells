@@ -11,7 +11,7 @@ mod geometry;
 // Cellule
 //
 #[deriving(Clone)]
-struct Cell {
+pub struct Cell {
     center: Point,
     id: uint,
     radius: f64,
@@ -48,7 +48,7 @@ impl Cell {
     }
 
     pub fn replicate(&self, tumeur: &~[~Cell], time: f64) -> Option<~Cell> {
-        if(self.t_dup<=time) {
+        if self.t_dup<=time {
             let new_center=self.center + Point::new_dir()*2.2f64*self.radius;
             Some(~Cell{center: new_center, id: tumeur.len()+1, radius: self.radius, velocity: Point::new(), acc: Point::new(), generation: self.generation+1, age:0f64, t_dup: time+calc_dup_time() })
         }
@@ -61,9 +61,9 @@ impl Cell {
         let seuil=3.0*self.radius;
         let mut force = Point::new();
         for cell in tumeur.iter() {
-            if(cell.id != self.id) {
+            if cell.id != self.id {
                 let dist_cells=f64::max((self.dist(*cell)-2.0*self.radius),0.0f64)+1e-6f64;
-                if(dist_cells <= 20f64*self.radius) {
+                if dist_cells <= 20f64*self.radius {
                    let factor_rep =  1.0/pow(dist_cells/seuil,3)*1e-7f64 ;
                     let factor_attract = -1.0/pow(dist_cells/(3.0*seuil),2)*1e-7f64;
                     force = force + (self.center-cell.center)*(factor_rep+factor_attract);
@@ -156,7 +156,7 @@ impl Crowd {
     pub fn evolve(&self, dt: f64) -> Crowd {
         let mut new_crowd : ~[~Cell] = ~[];
         for cell in self.cells.iter() {
-            if(!cell.should_die()) {
+            if !cell.should_die() {
 
                 // Prolifération
                 match cell.replicate(&self.cells, self.time) {

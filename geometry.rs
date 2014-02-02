@@ -3,7 +3,6 @@ use std::rand;
 use std::rand::{Rand,Rng};
 use std::ops;
 use std::num::{pow,sqrt};
-use std::gc::Gc;
 
 #[deriving(Clone,Eq)]
 pub struct Point {
